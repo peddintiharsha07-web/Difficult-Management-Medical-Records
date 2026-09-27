@@ -1,0 +1,59 @@
+{% extends "partials/app_shell.html" %}
+{% block title %}Patient Dashboard — MedGrid{% endblock %}
+{% block role_tag %}Patient{% endblock %}
+{% block sidebar %}
+  <a href="{% url 'dashboard:home' %}" class="sidebar-link active">Overview</a>
+  <a href="{% url 'patients:my_records' %}" class="sidebar-link">Medical Records</a>
+  <a href="{% url 'patients:my_qr_card' %}" class="sidebar-link">My Medical ID & QR</a>
+  <a href="{% url 'patients:book_appointment' %}" class="sidebar-link">Book Appointment</a>
+  <a href="{% url 'patients:my_appointments' %}" class="sidebar-link">My Appointments</a>
+  <a href="{% url 'emergency:my_logs' %}" class="sidebar-link">Emergency Access Log</a>
+  <a href="{% url 'patients:edit_profile' %}" class="sidebar-link">Edit Profile</a>
+  <a href="{% url 'users:profile' %}" class="sidebar-link">Account</a>
+{% endblock %}
+{% block main_content %}
+{% if not profile %}
+  <div class="empty-state"><h3>Profile not found</h3><p>Please contact support.</p></div>
+{% else %}
+  <div class="app-header">
+    <div>
+      <span class="eyebrow">Welcome back</span>
+      <h1 style="margin-bottom:4px;">{{ user.get_full_name }}</h1>
+      <p class="mono muted">{{ profile.medical_id }}</p>
+    </div>
+    <a href="{% url 'patients:my_qr_card' %}" class="btn btn-primary">View QR Health Card</a>
+  </div>
+
+  <div class="grid-4" style="margin-bottom:32px;">
+    <div class="stat-card"><div class="stat-value">{{ total_appointments }}</div><div class="stat-label">Appointments</div></div>
+    <div class="stat-card"><div class="stat-value">{{ total_records }}</div><div class="stat-label">Medical Records</div></div>
+    <div class="stat-card"><div class="stat-value">{{ upcoming_appointments|length }}</div><div class="stat-label">Upcoming</div></div>
+    <div class="stat-card"><div class="stat-value">{{ allergies|length }}</div><div class="stat-label">Allergies on file</div></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>Upcoming appointments</h3>
+      {% for a in upcoming_appointments %}
+        <div style="padding:10px 0; border-top:1px solid var(--line);">
+          <strong>Dr. {{ a.doctor.user.get_full_name }}</strong> — {{ a.appointment_date }} at {{ a.appointment_time }}
+          <br><span class="badge badge-info">{{ a.get_status_display }}</span>
+        </div>
+      {% empty %}
+        <p class="muted">No upcoming appointments. <a href="{% url 'patients:book_appointment' %}">Book one now</a>.</p>
+      {% endfor %}
+    </div>
+    <div class="card">
+      <h3>Recent medical records</h3>
+      {% for r in recent_records %}
+        <div style="padding:10px 0; border-top:1px solid var(--line);">
+          <strong>{{ r.diagnosis|truncatechars:40|default:"Consultation" }}</strong>
+          <br><span class="muted" style="font-size:0.85rem;">{{ r.consultation_date }} · Dr. {{ r.doctor.user.get_full_name|default:"—" }}</span>
+        </div>
+      {% empty %}
+        <p class="muted">No medical records yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

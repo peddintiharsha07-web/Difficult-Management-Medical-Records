@@ -1,0 +1,45 @@
+{% extends "partials/app_shell.html" %}
+{% block title %}{{ patient.user.get_full_name }} — MedGrid{% endblock %}
+{% block role_tag %}Doctor{% endblock %}
+{% block sidebar %}
+  <a href="{% url 'dashboard:home' %}" class="sidebar-link">Overview</a>
+  <a href="{% url 'doctors:search_patient' %}" class="sidebar-link active">Search Patient</a>
+  <a href="{% url 'doctors:scan_qr' %}" class="sidebar-link">Scan QR Code</a>
+  <a href="{% url 'doctors:my_appointments' %}" class="sidebar-link">Appointments</a>
+  <a href="{% url 'emergency:access' %}" class="sidebar-link">Emergency Access</a>
+{% endblock %}
+{% block main_content %}
+<div class="app-header">
+  <div>
+    <span class="eyebrow mono">{{ patient.medical_id }}</span>
+    <h1>{{ patient.user.get_full_name }}</h1>
+    <p class="muted">{{ patient.get_gender_display }} · Blood group {{ patient.get_blood_group_display }}</p>
+  </div>
+  <a href="{% url 'doctors:create_record' patient.medical_id %}" class="btn btn-primary">+ New medical record</a>
+</div>
+
+<div class="grid-2" style="margin-bottom:24px;">
+  <div class="card">
+    <h3>Allergies</h3>
+    {% for a in patient.allergies.all %}<span class="badge badge-alert" style="margin:2px;">{{ a.allergen }}</span>{% empty %}<p class="muted">None recorded.</p>{% endfor %}
+  </div>
+  <div class="card">
+    <h3>Chronic conditions & medications</h3>
+    <p>{{ patient.chronic_diseases|default:"None recorded." }}</p>
+    <p>{{ patient.current_medications|default:"" }}</p>
+  </div>
+</div>
+
+<h3>Medical history</h3>
+{% for r in records %}
+<div class="card" style="margin-bottom:14px;">
+  <div class="flex" style="justify-content:space-between;">
+    <strong>{{ r.consultation_date|date:"M d, Y" }} — {{ r.diagnosis|truncatechars:60|default:"Consultation" }}</strong>
+    <span class="badge badge-primary">{{ r.get_status_display }}</span>
+  </div>
+  <p class="muted" style="margin:6px 0 0;">Dr. {{ r.doctor.user.get_full_name|default:"—" }} · {{ r.hospital.name|default:"—" }}</p>
+</div>
+{% empty %}
+<div class="empty-state"><h3>No records yet</h3><p>Create the first medical record for this patient.</p></div>
+{% endfor %}
+{% endblock %}
