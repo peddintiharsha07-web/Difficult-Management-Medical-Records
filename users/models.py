@@ -20,9 +20,15 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=Role.choices)
     phone_number = models.CharField(max_length=20, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    mbbs_certificate = models.FileField(
+    upload_to='mbbs_certificates/',
+    blank=True,
+    null=True
+)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     preferred_language = models.CharField(max_length=10, default='en')
     date_of_birth = models.DateField(null=True, blank=True)
+    
     address = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

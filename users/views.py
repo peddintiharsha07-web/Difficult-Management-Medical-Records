@@ -31,7 +31,7 @@ def register_patient(request):
 
 def register_doctor(request):
     if request.method == 'POST':
-        form = DoctorRegistrationForm(request.POST)
+        form = DoctorRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Registration submitted. A system administrator must approve your '

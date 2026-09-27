@@ -30,11 +30,11 @@ class DoctorRegistrationForm(UserCreationForm):
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
     phone_number = forms.CharField(required=True)
-
+    mbbs_certificate = forms.FileField(required=True)
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'phone_number',
-                   'password1', 'password2')
+                   'mbbs_certificate', 'password1', 'password2')
 
     def save(self, commit=True):
         user = super().save(commit=False)
