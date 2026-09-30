@@ -28,19 +28,31 @@ def register_patient(request):
         form = PatientRegistrationForm()
     return render(request, 'users/register_patient.html', {'form': form})
 
-
 def register_doctor(request):
     if request.method == 'POST':
-        form = DoctorRegistrationForm(request.POST, request.FILES)
+        form = DoctorRegistrationForm(
+            request.POST,
+            request.FILES
+        )
+
         if form.is_valid():
             form.save()
-            messages.success(request, 'Registration submitted. A system administrator must approve your '
-                                       'account before you can log in.')
+
+            messages.success(
+                request,
+                'Registration submitted. A system administrator must approve your account before you can log in.'
+            )
+
             return redirect('users:login')
+
     else:
         form = DoctorRegistrationForm()
-    return render(request, 'users/register_doctor.html', {'form': form})
 
+    return render(
+        request,
+        'users/register_doctor.html',
+        {'form': form}
+    )
 
 def register_hospital(request):
     if request.method == 'POST':
